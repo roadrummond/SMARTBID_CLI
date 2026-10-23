@@ -1,0 +1,29 @@
+yaml
+name: Build SmartBid.exe
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: SmartBid_build/SmartBid
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pyinstaller
+      - name: Gerar SmartBid.exe
+        run: pyinstaller --onefile --console --name SmartBid --collect-data docx smartbid.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SmartBid-exe
+          path: SmartBid_build/SmartBid/dist/SmartBi
